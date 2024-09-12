@@ -1,0 +1,35 @@
+{
+  "name": "apicurio-cli",
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint",
+    "format": "prettier --write .",
+    "dev": "tsx src/index.ts",
+    "build": "npm run generate:client && esbuild src/index.ts --bundle --platform=node --outfile=dist/index.js",
+    "generate:client": "tsx scripts/download-apicurio-api-schema.ts &&  npx @hey-api/openapi-ts -i tmp/openapi.json -o generated/client -c @hey-api/client-fetch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "bin": {
+    "apicurio": "dist/index.js"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.10.0",
+    "@types/node": "^22.5.4",
+    "@types/yargs": "^17.0.33",
+    "esbuild": "0.23.1",
+    "eslint": "^9.10.0",
+    "globals": "^15.9.0",
+    "prettier": "3.3.3",
+    "tsx": "^4.19.0",
+    "typescript-eslint": "^8.5.0"
+  },
+  "dependencies": {
+    "@hey-api/client-fetch": "^0.2.4",
+    "open": "^10.1.0",
+    "yargs": "^17.7.2"
+  }
+}
