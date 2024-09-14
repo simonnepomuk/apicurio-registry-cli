@@ -1,5 +1,9 @@
 {
-  "name": "apicurio-registry-cli",
+  "name": "@simonnepomuk/apicurio-registry-cli",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/simonnepomuk/apicurio-registry-cli.git"
+  },
   "version": "0.0.1",
   "main": "index.js",
   "scripts": {
