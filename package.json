@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "main": "index.js",
   "scripts": {
-    "build": "npm run generate:client && esbuild src/index.ts --bundle --platform=node --outfile=dist/index.js",
+    "build": "npm run generate:client && npm run check-types && esbuild src/index.ts --bundle --platform=node --outfile=dist/index.js",
+    "check-types": "tsc --noEmit",
     "dev": "tsx src/index.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
