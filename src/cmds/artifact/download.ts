@@ -5,6 +5,7 @@ import {
 import { writeFileSync } from "fs";
 import { ArgumentsCamelCase, CommandModule } from "yargs";
 import { ensureDirectoryExistence } from "../../utils";
+import { parseArtifactInfo } from "./util";
 
 type DownloadArtifactCommandArgs = {
   artifactTag: string;
@@ -15,9 +16,9 @@ type DownloadArtifactCommandArgs = {
 
 export const {
   command,
+  describe,
   handler,
   builder,
-  describe,
 }: CommandModule<{ registry: string }, DownloadArtifactCommandArgs> = {
   command: "artifact download <artifactTag>",
   describe:
@@ -53,17 +54,11 @@ async function handleDownloadCommand(
     argv.artifactTag as string,
   );
 
-  const path = {
-    groupId,
-    artifactId,
-    version,
-  };
+  const path = { groupId, artifactId };
 
-  const { error, data } =
-    version && version !== "latest"
-      ? // @ts-expect-error version is not null
-        await getArtifactVersion({ path })
-      : await getLatestArtifact({ path });
+  const { error, data } = version
+    ? await getArtifactVersion({ path: { ...path, version } })
+    : await getLatestArtifact({ path });
 
   if (error) {
     console.error(error);
@@ -80,20 +75,4 @@ async function handleDownloadCommand(
     console.log("Artifact content: \n");
     console.log(JSON.stringify(data, null, 2));
   }
-}
-
-function parseArtifactInfo(artifactString: string) {
-  const regex = /^([^/]+)\/([^:]+)(?::(.+))?$/;
-  const match = artifactString.match(regex);
-
-  if (!match) {
-    throw new Error(
-      "Invalid artifact tag. Format: <groupId>/<artifactId>[:version]",
-    );
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, groupId, artifactId, version] = match;
-
-  return { groupId, artifactId, version: version || null };
 }

@@ -1,12 +1,12 @@
 {
-  "name": "apicurio-cli",
+  "name": "apicurio-registry-cli",
   "version": "0.0.1",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint",
-    "format": "prettier --write .",
-    "dev": "tsx src/index.ts",
     "build": "npm run generate:client && esbuild src/index.ts --bundle --platform=node --outfile=dist/index.js",
+    "dev": "tsx src/index.ts",
+    "lint": "eslint .",
+    "format": "prettier --write .",
     "generate:client": "tsx scripts/download-apicurio-api-schema.ts &&  npx @hey-api/openapi-ts -i tmp/openapi.json -o generated/client -c @hey-api/client-fetch"
   },
   "keywords": [],

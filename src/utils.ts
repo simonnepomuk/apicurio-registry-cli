@@ -1,11 +1,11 @@
-import path from "node:path";
 import { existsSync, mkdirSync } from "fs";
+import { dirname } from "path";
 
 export function ensureDirectoryExistence(filePath: string) {
-  const dirname = path.dirname(filePath);
-  if (existsSync(dirname)) {
+  const dir = dirname(filePath);
+  if (existsSync(dir)) {
     return true;
   }
-  ensureDirectoryExistence(dirname);
-  mkdirSync(dirname);
+  ensureDirectoryExistence(dir);
+  mkdirSync(dir);
 }

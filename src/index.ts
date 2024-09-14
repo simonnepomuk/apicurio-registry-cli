@@ -2,9 +2,9 @@
 
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { commands } from "./cmds";
 import { client } from "../generated/client";
 import { authMiddleware } from "./auth/auth";
+import { commands } from "./cmds";
 
 yargs(hideBin(process.argv))
   .option("registry", {
@@ -38,6 +38,7 @@ yargs(hideBin(process.argv))
     type: "string",
     demandOption: false,
   })
+  // @ts-expect-error yargs types are incorrect
   .command(commands)
   .middleware(setRegistryUrlMiddleware)
   .middleware(authMiddleware)

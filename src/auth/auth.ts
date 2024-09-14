@@ -57,7 +57,7 @@ const getSavedToken = () => {
   try {
     const tokenFile = readFileSync(TOKEN_FILE, "utf-8");
     return JSON.parse(tokenFile) as { accessToken: string };
-  } catch (e) {
+  } catch {
     console.log("No token found.");
     return null;
   }
