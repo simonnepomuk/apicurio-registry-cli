@@ -4,7 +4,6 @@
     "type": "git",
     "url": "https://github.com/simonnepomuk/apicurio-registry-cli.git"
   },
-  "version": "0.0.1",
   "main": "index.js",
   "scripts": {
     "build": "npm run generate:client && npm run check-types && esbuild src/index.ts --bundle --platform=node --outfile=dist/index.js",
