@@ -1,9 +1,11 @@
+import { TokenResponse } from "../types";
+
 export async function startResourceOwnerPasswordCredentialsFlow(
   authUrl: string,
   clientId: string,
   clientSecret: string,
   scope?: string,
-) {
+): TokenResponse {
   const scopeParam = scope ?? {};
   const response = await fetch(`${authUrl}/token`, {
     method: "POST",
@@ -22,6 +24,5 @@ export async function startResourceOwnerPasswordCredentialsFlow(
     throw new Error(`Failed to authenticate: ${response.statusText}`);
   }
 
-  const { access_token: token } = await response.json();
-  return token;
+  return response.json();
 }

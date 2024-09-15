@@ -1,11 +1,15 @@
 import open from "open";
-import { GetDeviceCodeResponse, GetTokenResponse } from "../types";
+import {
+  GetDeviceCodeResponse,
+  GetTokenResponse,
+  TokenResponse,
+} from "../types";
 
 export const startDeviceCodeFlow = async (
   url: string,
   clientId: string,
   scope?: string,
-) => {
+): TokenResponse => {
   const { device_code, verification_uri_complete } = await getDeviceCode(
     url,
     clientId,
@@ -15,12 +19,7 @@ export const startDeviceCodeFlow = async (
   await open(verification_uri_complete);
   console.log(`Waiting for device to be authorized...`);
 
-  const { access_token: token } = await pollForToken(
-    url,
-    clientId,
-    device_code,
-  );
-  return token;
+  return await pollForToken(url, clientId, device_code);
 };
 
 async function getDeviceCode(

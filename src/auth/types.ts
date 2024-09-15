@@ -14,3 +14,7 @@ export type GetTokenResponse = {
   refresh_token: string;
   scope: string;
 };
+
+export type TokenResponse = Promise<
+  Pick<GetTokenResponse, "access_token" | "expires_in">
+>;

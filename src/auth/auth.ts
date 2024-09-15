@@ -41,7 +41,7 @@ const retrieveAndStoreToken = async (
   if (savedToken) {
     return savedToken.accessToken;
   }
-  const token = clientSecret
+  const { access_token: token, expires_in: expiresIn } = clientSecret
     ? await startResourceOwnerPasswordCredentialsFlow(
         authUrl,
         clientId,
@@ -49,21 +49,38 @@ const retrieveAndStoreToken = async (
         scope,
       )
     : await startDeviceCodeFlow(authUrl, clientId, scope);
-  saveToken(token);
+
+  saveToken(token, expiresIn);
   return token;
 };
 
 const getSavedToken = () => {
   try {
     const tokenFile = readFileSync(TOKEN_FILE, "utf-8");
-    return JSON.parse(tokenFile) as { accessToken: string };
+    const token = JSON.parse(tokenFile) as {
+      accessToken: string;
+      expirationTimestamp: number;
+    };
+    const currentTimestamp = Date.now();
+    if (currentTimestamp < token.expirationTimestamp) {
+      return token;
+    } else {
+      console.log("Token expired.");
+      return null;
+    }
   } catch {
     console.log("No token found.");
     return null;
   }
 };
 
-const saveToken = (token: string) => {
-  const tokenFile = JSON.stringify({ accessToken: token });
+const saveToken = (token: string, expiresIn: number) => {
+  const expirationTimestamp = calculateExpirationTimestamp(expiresIn);
+  const tokenFile = JSON.stringify({ accessToken: token, expirationTimestamp });
   writeFileSync(TOKEN_FILE, tokenFile);
 };
+
+function calculateExpirationTimestamp(expiresIn: number): number {
+  const currentTimestamp = Date.now();
+  return currentTimestamp + expiresIn * 1000;
+}
