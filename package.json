@@ -7,7 +7,7 @@
   "type": "module",
   "main": "dist/index.mjs",
   "scripts": {
-    "build": "npm run generate:client && npm run check-types && esbuild src/index.ts --bundle --format=esm --platform=node --outfile=dist/index.mjs",
+    "build": "npm run generate:client && npm run check-types && esbuild src/index.ts --bundle --minify --format=esm --platform=node --outfile=dist/index.mjs",
     "check-types": "tsc --noEmit",
     "dev": "tsx src/index.ts",
     "lint": "eslint .",
