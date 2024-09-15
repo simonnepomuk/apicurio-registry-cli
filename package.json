@@ -4,9 +4,10 @@
     "type": "git",
     "url": "https://github.com/simonnepomuk/apicurio-registry-cli.git"
   },
-  "main": "index.js",
+  "type": "module",
+  "main": "dist/index.mjs",
   "scripts": {
-    "build": "npm run generate:client && npm run check-types && esbuild src/index.ts --bundle --platform=node --outfile=dist/index.js",
+    "build": "npm run generate:client && npm run check-types && esbuild src/index.ts --bundle --format=esm --platform=node --outfile=dist/index.mjs",
     "check-types": "tsc --noEmit",
     "dev": "tsx src/index.ts",
     "lint": "eslint .",
@@ -18,7 +19,7 @@
   "license": "ISC",
   "description": "",
   "bin": {
-    "apicurio": "dist/index.js"
+    "apicurio": "dist/index.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.10.0",
