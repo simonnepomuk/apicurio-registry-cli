@@ -1,40 +1,85 @@
 {
   "name": "@simonnepomuk/apicurio-registry-cli",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/simonnepomuk/apicurio-registry-cli.git"
-  },
-  "type": "module",
-  "main": "dist/index.mjs",
-  "scripts": {
-    "build": "npm run generate:client && npm run check-types && esbuild src/index.ts --bundle --minify --format=esm --platform=node --outfile=dist/index.mjs",
-    "check-types": "tsc --noEmit",
-    "dev": "tsx src/index.ts",
-    "lint": "eslint .",
-    "format": "prettier --write .",
-    "generate:client": "tsx scripts/download-apicurio-api-schema.ts &&  npx @hey-api/openapi-ts -i tmp/openapi.json -o generated/client -c @hey-api/client-fetch"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "description": "CLI to interact with the apicurio registry",
+  "author": "simonnepomuk",
   "bin": {
-    "apicurio": "dist/index.mjs"
+    "apicurio": "bin/run.js"
   },
-  "devDependencies": {
-    "@eslint/js": "^9.10.0",
-    "@types/node": "^22.5.4",
-    "@types/yargs": "^17.0.33",
-    "esbuild": "0.23.1",
-    "eslint": "^9.10.0",
-    "globals": "^15.9.0",
-    "prettier": "3.3.3",
-    "tsx": "^4.19.0",
-    "typescript-eslint": "^8.5.0"
-  },
+  "bugs": "https://github.com/simonnepomuk/apicurio-registry-cli/issues",
   "dependencies": {
     "@hey-api/client-fetch": "^0.2.4",
-    "open": "^10.1.0",
-    "yargs": "^17.7.2"
-  }
+    "@oclif/core": "^4",
+    "@oclif/plugin-help": "^6",
+    "@oclif/plugin-plugins": "^5",
+    "open": "^10.1.0"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "^0.53.0",
+    "@oclif/prettier-config": "^0.2.1",
+    "@oclif/test": "^4",
+    "@types/chai": "^4",
+    "@types/mocha": "^10",
+    "@types/node": "^18",
+    "chai": "^4",
+    "eslint": "^8",
+    "eslint-config-oclif": "^5",
+    "eslint-config-oclif-typescript": "^3",
+    "eslint-config-prettier": "^9",
+    "mocha": "^10",
+    "oclif": "^4",
+    "shx": "^0.3.3",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "/bin",
+    "/dist",
+    "/oclif.manifest.json"
+  ],
+  "homepage": "https://github.com/simonnepomuk/apicurio-registry-cli",
+  "keywords": [
+    "oclif",
+    "apicurio",
+    "registry",
+    "cli",
+    "api",
+    "registry-cli",
+    "apicurio-registry",
+    "apicurio-registry-cli",
+    "apicurio-cli"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "type": "module",
+  "oclif": {
+    "bin": "apicurio",
+    "dirname": "apicurio",
+    "commands": "./dist/commands",
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-plugins"
+    ],
+    "topicSeparator": " ",
+    "topics": {
+      "artifact": {
+        "description": "Interact with the artifacts in the registry"
+      }
+    }
+  },
+  "repository": "simonnepomuk/apicurio-registry-cli",
+  "scripts": {
+    "build": "shx rm -rf dist && npm run generate:client && tsc -b",
+    "lint": "eslint . --ext .ts",
+    "postpack": "shx rm -f oclif.manifest.json",
+    "posttest": "npm run lint",
+    "prepack": "oclif manifest && oclif readme",
+    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "version": "oclif readme && git add README.md",
+    "generate:client": "tsx scripts/download-apicurio-api-schema.ts && npx @hey-api/openapi-ts && tsx scripts/fix-client-imports.ts"
+  },
+  "types": "dist/index.d.ts"
 }

@@ -1,15 +1,14 @@
-#! /usr/bin/env node
-import { existsSync, mkdirSync, writeFileSync } from "fs";
+import {writeFileSync} from "node:fs";
+
+import {ensureDirectoryExistence} from "../src/utils/fs.js";
 
 const url =
-  "https://raw.githubusercontent.com/Apicurio/apicurio-registry/2.6.x/common/src/main/resources/META-INF/openapi.json";
+    "https://raw.githubusercontent.com/Apicurio/apicurio-registry/2.6.x/common/src/main/resources/META-INF/openapi.json";
 const tempFolder = "tmp";
 
-fetch(url)
-  .then((response) => response.json())
-  .then((data) => {
-    if (!existsSync(tempFolder)) {
-      mkdirSync(tempFolder);
-    }
-    writeFileSync(`${tempFolder}/openapi.json`, JSON.stringify(data, null, 2));
-  });
+const response = await fetch(url);
+const api = await response.json();
+const filepath = `${tempFolder}/openapi.json`;
+
+ensureDirectoryExistence(filepath);
+writeFileSync(filepath, JSON.stringify(api, null, 2));

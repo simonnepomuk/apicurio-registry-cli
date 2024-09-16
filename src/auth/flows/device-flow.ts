@@ -1,80 +1,92 @@
 import open from "open";
+
 import {
-  GetDeviceCodeResponse,
-  GetTokenResponse,
-  TokenResponse,
-} from "../types";
+    GetDeviceCodeResponse,
+    GetTokenResponse,
+    TokenResponse,
+} from "../types.js";
 
 export const startDeviceCodeFlow = async (
-  url: string,
-  clientId: string,
-  scope?: string,
-): TokenResponse => {
-  const { device_code, verification_uri_complete } = await getDeviceCode(
-    url,
-    clientId,
-    scope,
-  );
-  console.log(`Opening ${verification_uri_complete}`);
-  await open(verification_uri_complete);
-  console.log(`Waiting for device to be authorized...`);
+    url: string,
+    clientId: string,
+    scope?: string,
+): Promise<TokenResponse> => {
+    const {device_code: deviceCode, verification_uri_complete: verificationUriComplete} = await getDeviceCode(
+        url,
+        clientId,
+        scope,
+    );
+    console.log(`Opening ${verificationUriComplete}`);
+    await open(verificationUriComplete);
+    console.log(`Waiting for device to be authorized...`);
 
-  return await pollForToken(url, clientId, device_code);
+    return pollForToken(url, clientId, deviceCode);
 };
 
 async function getDeviceCode(
-  baseUrl: string,
-  clientId: string,
-  scope?: string,
+    baseUrl: string,
+    clientId: string,
+    scope?: string,
 ): Promise<GetDeviceCodeResponse> {
-  const deviceCodeEndpoint = `${baseUrl}/auth/device`;
-  const scopeParam = scope ?? {};
-  const response = await fetch(deviceCodeEndpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: new URLSearchParams({
-      client_id: clientId,
-      ...scopeParam,
-    }),
-  });
-  if (!response.ok) {
-    throw new Error(`Failed to authenticate: ${response.statusText}`);
-  }
-  return response.json();
+    const deviceCodeEndpoint = `${baseUrl}/auth/device`;
+    const scopeParam = scope ?? {};
+    const response = await fetch(deviceCodeEndpoint, {
+        body: new URLSearchParams({
+            // eslint-disable-next-line camelcase
+            client_id: clientId,
+            ...scopeParam,
+        }),
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        method: "POST",
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to authenticate: ${response.statusText}`);
+    }
+
+    return response.json();
 }
 
 async function pollForToken(
-  baseUrl: string,
-  clientId: string,
-  deviceCode: string,
+    baseUrl: string,
+    clientId: string,
+    deviceCode: string,
 ): Promise<GetTokenResponse> {
-  let interval = 5;
-  let retries = 0;
-  while (retries < 30) {
-    const response = await fetch(`${baseUrl}/token`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        client_id: clientId,
-        device_code: deviceCode,
-        grant_type: "urn:ietf:params:oauth:grant-type:device_code",
-      }),
-    });
-    if (!response.ok) {
-      const error: { error: string; error_description: string } =
-        await response.json();
-      console.log(`${error.error_description}`);
-      retries++;
-      await new Promise((resolve) => setTimeout(resolve, interval * 1000));
-      interval *= 2;
-    } else {
-      return response.json();
-    }
-  }
+    let interval = 5;
+    let retries = 0;
+    while (retries < 30) {
+        // eslint-disable-next-line no-await-in-loop
+        const response = await fetch(`${baseUrl}/token`, {
+            body: new URLSearchParams({
+                // eslint-disable-next-line camelcase
+                client_id: clientId,
+                // eslint-disable-next-line camelcase
+                device_code: deviceCode,
+                // eslint-disable-next-line camelcase
+                grant_type: "urn:ietf:params:oauth:grant-type:device_code",
+            }),
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            method: "POST",
+        });
+        if (response.ok) {
+            return response.json();
+        }
 
-  throw new Error("Failed to authenticate");
+        const error: { error: string; error_description: string } =
+            // eslint-disable-next-line no-await-in-loop
+            await response.json();
+        console.log(`${error.error_description}`);
+        retries++;
+        // eslint-disable-next-line no-await-in-loop
+        await new Promise((resolve) => {
+            setTimeout(resolve, interval * 1000)
+        });
+        interval *= 2;
+
+    }
+
+    throw new Error("Failed to authenticate");
 }
