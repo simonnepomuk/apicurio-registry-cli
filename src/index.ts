@@ -1,54 +1,66 @@
-#!/usr/bin/env node
+import {Args, Command, Flags, Interfaces} from '@oclif/core';
 
-import yargs from "yargs";
-import { hideBin } from "yargs/helpers";
-import { client } from "../generated/client";
-import { authMiddleware } from "./auth/auth";
-import { commands } from "./cmds";
+import {authenticate} from "./auth/auth.js";
+import {client} from "./generated/client/index.js";
 
-yargs(hideBin(process.argv))
-  .option("registry", {
-    alias: "r",
-    describe: "Registry URL",
-    type: "string",
-    demandOption: true,
-  })
-  .option("auth-url", {
-    alias: "a",
-    describe: "Auth Server URL",
-    type: "string",
-    demandOption: false,
-    implies: ["client-id"],
-  })
-  .option("client-id", {
-    alias: "c",
-    describe: "Auth Client ID",
-    type: "string",
-    demandOption: false,
-  })
-  .option("client-secret", {
-    alias: "s",
-    describe: "Auth Client Secret",
-    type: "string",
-    demandOption: false,
-  })
-  .option("scope", {
-    alias: "o",
-    describe: "Auth Scope",
-    type: "string",
-    demandOption: false,
-  })
-  // @ts-expect-error yargs types are incorrect
-  .command(commands)
-  .middleware(setRegistryUrlMiddleware)
-  .middleware(authMiddleware)
-  .demandCommand()
-  .env("APICURIO")
-  .completion()
-  .parse();
+export {run} from '@oclif/core'
 
-function setRegistryUrlMiddleware(argv: { registry: string }) {
-  client.setConfig({
-    baseUrl: `${argv.registry}/apis/registry/v2`,
-  });
+export type Flags<T extends typeof Command> = Interfaces.InferredFlags<T['flags'] & typeof BaseCommand['baseFlags']>
+export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>
+
+export abstract class BaseCommand<T extends typeof Command> extends Command {
+    static baseFlags = {
+        authUrl: Flags.string({
+            aliases: ['auth-url'],
+            dependsOn: ['clientId'],
+            description: 'Apicurio Registry Auth URL',
+            env: 'APICURIO_REGISTRY_AUTH_URL',
+            required: false,
+        }),
+        clientId: Flags.string({
+            aliases: ['client-id'],
+            description: 'Apicurio Registry Client ID',
+            env: 'APICURIO_REGISTRY_CLIENT_ID',
+        }),
+        clientSecret: Flags.string({
+            aliases: ['client-secret'],
+            description: 'Apicurio Registry Client Secret',
+            env: 'APICURIO_REGISTRY_CLIENT_SECRET',
+        }),
+        registry: Flags.string({
+            description: 'Apicurio Registry URL',
+            env: 'APICURIO_REGISTRY_URL',
+            required: true,
+        }),
+    };
+
+    protected args!: Args<T>
+    protected flags!: Flags<T>
+
+    public async init(): Promise<void> {
+        await super.init()
+        const {args, flags} = await this.parse({
+            args: this.ctor.args,
+            baseFlags: (super.ctor as typeof BaseCommand).baseFlags,
+            enableJsonFlag: this.ctor.enableJsonFlag,
+            flags: this.ctor.flags,
+            strict: this.ctor.strict,
+        })
+        this.flags = flags as Flags<T>
+        this.args = args as Args<T>
+
+        const {authUrl, clientId, clientSecret, registry} = this.flags
+        client.setConfig({
+            baseUrl: `${registry}/apis/registry/v2`,
+        });
+
+        authUrl && await authenticate({authUrl, clientId: clientId as string, clientSecret})
+    }
+}
+
+export abstract class ArtifactCommand<T extends typeof Command> extends BaseCommand<T> {
+    static args = {
+        ...BaseCommand.args,
+        artifactTag: Args.string({description: 'Artifact tag', required: true}),
+    }
 }
