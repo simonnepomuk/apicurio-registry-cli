@@ -13,24 +13,30 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
         authUrl: Flags.string({
             aliases: ['auth-url'],
             dependsOn: ['clientId'],
-            description: 'Apicurio Registry Auth URL',
+            description: 'The .well-known URL of the OpenID Connect discovery document',
             env: 'APICURIO_REGISTRY_AUTH_URL',
             required: false,
         }),
         clientId: Flags.string({
             aliases: ['client-id'],
-            description: 'Apicurio Registry Client ID',
+            description: 'The OAuth2 client ID',
             env: 'APICURIO_REGISTRY_CLIENT_ID',
         }),
         clientSecret: Flags.string({
             aliases: ['client-secret'],
-            description: 'Apicurio Registry Client Secret',
+            description: 'The OAuth2 client secret',
             env: 'APICURIO_REGISTRY_CLIENT_SECRET',
         }),
         registry: Flags.string({
             description: 'Apicurio Registry URL',
             env: 'APICURIO_REGISTRY_URL',
             required: true,
+        }),
+        scopes: Flags.string({
+            delimiter: ',',
+            dependsOn: ['authUrl', 'clientId'],
+            description: 'OAuth2 scopes',
+            multiple: true,
         }),
     };
 
@@ -49,12 +55,12 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
         this.flags = flags as Flags<T>
         this.args = args as Args<T>
 
-        const {authUrl, clientId, clientSecret, registry} = this.flags
+        const {authUrl, clientId, clientSecret, registry, scopes} = this.flags
         client.setConfig({
             baseUrl: `${registry}/apis/registry/v2`,
         });
 
-        authUrl && await authenticate({authUrl, clientId: clientId as string, clientSecret})
+        authUrl && await authenticate({authUrl, clientId: clientId as string, clientSecret, scopes})
     }
 }
 

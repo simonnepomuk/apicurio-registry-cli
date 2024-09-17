@@ -52,7 +52,7 @@ Its possible to omit the version and the CLI will upload a new artifact version.
 
 The CLI supports authentication using OAuth2 device flow for human actors and the resource owner password credentials grant for machine actors.
 You can authenticate with the registry using the `auth-url` option. If you pass the `--auth-url` option and `client-id` the CLI will start the device flow.
-If you pass the `--auth-url`, `client-id`, `client-secret` the CLI will start the resource owner password credentials grant. You can optionally pass a `--scope` option to specify the scope of the token.
+If you pass the `--auth-url`, `client-id`, `client-secret` the CLI will start the resource owner password credentials grant. You can optionally pass a comma-separated list of scopes with the `--scopes` option to specify the scopes of the token.
 
 #### Device flow
 ```bash
