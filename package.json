@@ -11,7 +11,8 @@
     "@oclif/core": "^4",
     "@oclif/plugin-help": "^6",
     "@oclif/plugin-plugins": "^5",
-    "open": "^10.1.0"
+    "open": "^10.1.0",
+    "openid-client": "^5.7.0"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "^0.53.0",

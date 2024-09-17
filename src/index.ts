@@ -32,6 +32,12 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
             env: 'APICURIO_REGISTRY_URL',
             required: true,
         }),
+        scopes: Flags.string({
+            delimiter: ',',
+            dependsOn: ['authUrl', 'clientId'],
+            description: 'OAuth2 scopes',
+            multiple: true,
+        }),
     };
 
     protected args!: Args<T>
@@ -49,12 +55,12 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
         this.flags = flags as Flags<T>
         this.args = args as Args<T>
 
-        const {authUrl, clientId, clientSecret, registry} = this.flags
+        const {authUrl, clientId, clientSecret, registry, scopes} = this.flags
         client.setConfig({
             baseUrl: `${registry}/apis/registry/v2`,
         });
 
-        authUrl && await authenticate({authUrl, clientId: clientId as string, clientSecret})
+        authUrl && await authenticate({authUrl, clientId: clientId as string, clientSecret, scopes})
     }
 }
 
