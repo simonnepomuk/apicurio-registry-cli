@@ -63,3 +63,94 @@ apicurio --auth-url http://<auth-url> --client-id <client-id>
 ```bash
 apicurio --auth-url http://<auth-url> --client-id <client-id> --client-secret <client-secret>
 ```
+
+# Commands
+  <!-- commands -->
+* [`apicurio artifact download ARTIFACTTAG`](#apicurio-artifact-download-artifacttag)
+* [`apicurio artifact upload ARTIFACTTAG`](#apicurio-artifact-upload-artifacttag)
+* [`apicurio help [COMMAND]`](#apicurio-help-command)
+
+## `apicurio artifact download ARTIFACTTAG`
+
+Download artifact. Usage example: `artifact download <groupId>/<artifactId>[:version]`
+
+```
+USAGE
+  $ apicurio artifact download ARTIFACTTAG --registry <value> [--clientSecret <value>] [--scopes <value>... [--authUrl
+    <value> --clientId <value>] ] [-o <value>] [-w]
+
+ARGUMENTS
+  ARTIFACTTAG  Artifact tag
+
+FLAGS
+  -o, --output=<value>        Output file path.
+  -w, --overwrite             Overwrite existing files
+      --authUrl=<value>       The .well-known URL of the OpenID Connect discovery document
+      --clientId=<value>      The OAuth2 client ID
+      --clientSecret=<value>  The OAuth2 client secret
+      --registry=<value>      (required) Apicurio Registry URL
+      --scopes=<value>...     OAuth2 scopes
+
+DESCRIPTION
+  Download artifact. Usage example: artifact download <groupId>/<artifactId>[:version]
+
+EXAMPLES
+  $ apicurio artifact download
+```
+
+_See code: [src/commands/artifact/download.ts](https://github.com/simonnepomuk/apicurio-registry-cli/blob/v/src/commands/artifact/download.ts)_
+
+## `apicurio artifact upload ARTIFACTTAG`
+
+Upload artifact
+
+```
+USAGE
+  $ apicurio artifact upload ARTIFACTTAG --registry <value> -f <value> [--clientSecret <value>] [--scopes <value>...
+    [--authUrl <value> --clientId <value>] ] [--ifExists FAIL|UPDATE|RETURN|RETURN_OR_UPDATE] [-t
+    PROTOBUF|JSON|AVRO|KONNECT|OPENAPI|ASYNCAPI|GRAPHQL|WSDL|XSD]
+
+ARGUMENTS
+  ARTIFACTTAG  Artifact tag
+
+FLAGS
+  -f, --file=<value>          (required) file to upload
+  -t, --type=<option>         Artifact Type.
+                              <options: PROTOBUF|JSON|AVRO|KONNECT|OPENAPI|ASYNCAPI|GRAPHQL|WSDL|XSD>
+      --authUrl=<value>       The .well-known URL of the OpenID Connect discovery document
+      --clientId=<value>      The OAuth2 client ID
+      --clientSecret=<value>  The OAuth2 client secret
+      --ifExists=<option>     [default: RETURN_OR_UPDATE] Strategy if artifact already exists
+                              <options: FAIL|UPDATE|RETURN|RETURN_OR_UPDATE>
+      --registry=<value>      (required) Apicurio Registry URL
+      --scopes=<value>...     OAuth2 scopes
+
+DESCRIPTION
+  Upload artifact
+
+EXAMPLES
+  $ apicurio artifact upload
+```
+
+_See code: [src/commands/artifact/upload.ts](https://github.com/simonnepomuk/apicurio-registry-cli/blob/v/src/commands/artifact/upload.ts)_
+
+## `apicurio help [COMMAND]`
+
+Display help for apicurio.
+
+```
+USAGE
+  $ apicurio help [COMMAND...] [-n]
+
+ARGUMENTS
+  COMMAND...  Command to show help for.
+
+FLAGS
+  -n, --nested-commands  Include all nested commands in the output.
+
+DESCRIPTION
+  Display help for apicurio.
+```
+
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.11/src/commands/help.ts)_
+<!-- commandsstop -->
