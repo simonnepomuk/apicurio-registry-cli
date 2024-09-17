@@ -13,18 +13,18 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
         authUrl: Flags.string({
             aliases: ['auth-url'],
             dependsOn: ['clientId'],
-            description: 'Apicurio Registry Auth URL',
+            description: 'The .well-known URL of the OpenID Connect discovery document',
             env: 'APICURIO_REGISTRY_AUTH_URL',
             required: false,
         }),
         clientId: Flags.string({
             aliases: ['client-id'],
-            description: 'Apicurio Registry Client ID',
+            description: 'The OAuth2 client ID',
             env: 'APICURIO_REGISTRY_CLIENT_ID',
         }),
         clientSecret: Flags.string({
             aliases: ['client-secret'],
-            description: 'Apicurio Registry Client Secret',
+            description: 'The OAuth2 client secret',
             env: 'APICURIO_REGISTRY_CLIENT_SECRET',
         }),
         registry: Flags.string({
